@@ -1,26 +1,21 @@
-import React, { useContext, useState, useEffect, ReactNode } from "react";
-import firebase from "firebase/compat";
-import { auth } from "@/proxy/firebase";
+import React, { useContext, useState, useEffect } from "react";
+import { auth } from "../../proxy/firebase";
 
-type AuthProviderProps = {
-  children: ReactNode
-}
-
-const AuthContext = React.createContext<firebase.User | null>(null);;
+const AuthContext = React.createContext();
 
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
-  const [currentUser, setCurrentUser] = useState<firebase.User | null>(null);
+export function AuthProvider({ children }) {
+  const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
 
-  function signup(email: string, password: string) {
+  function signup(email, password) {
     return auth.createUserWithEmailAndPassword(email, password);
   }
 
-  function login(email: string, password: string) {
+  function login(email, password) {
     return auth.signInWithEmailAndPassword(email, password);
   }
 
@@ -28,16 +23,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return auth.signOut();
   }
 
-  function resetPassword(email: string) {
+  function resetPassword(email) {
     return auth.sendPasswordResetEmail(email);
   }
 
-  function updateEmail(email: string) {
-    return currentUser?.updateEmail(email);
+  function updateEmail(email) {
+    return currentUser.updateEmail(email);
   }
 
-  function updatePassword(password: string) {
-    return currentUser?.updatePassword(password);
+  function updatePassword(password) {
+    return currentUser.updatePassword(password);
   }
 
   useEffect(() => {
@@ -45,6 +40,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setCurrentUser(user);
       setLoading(false);
     });
+
+    console.log("currentUser", currentUser)
 
     return unsubscribe;
   }, []);
